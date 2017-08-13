@@ -1,0 +1,47 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from django.db import models
+from django.contrib.auth.models import User
+
+
+# Create your models here.
+
+class Stock(models.Model):
+	name = models.CharField(max_length=10)
+	price = models.CharField(max_length=10)
+	volume = models.CharField(max_length=10)
+	perct = models.CharField(max_length=10)
+	high = models.CharField(max_length=10)
+	low = models.CharField(max_length=10)
+
+
+
+	def __str__(self):
+		return self.name
+
+
+
+class tempUser(models.Model):
+	fname = models.CharField(max_length=100)
+	lname = models.CharField(max_length=100)
+	email = models.CharField(max_length=100)
+	password = models.CharField(max_length=100)
+	tp = models.CharField(max_length=100)
+
+
+	def __str__(self):
+		return self.email
+
+
+class wishlist(models.Model):
+
+	user = models.ForeignKey(User)
+	stock = models.ForeignKey(Stock)
+
+
+		
+
+	
+
+
