@@ -204,7 +204,7 @@ def wishlisttable(request):
 			stock = Stock.objects.get(name=name)
 			print stock
 			print request.user
-			if wishlist.objects.filter(stock=stock).exists():
+			if wishlist.objects.filter(stock=stock,user=request.user).exists():
 				pass
 			else:
 				Wishlist = wishlist.objects.create(user=request.user,stock=stock)
