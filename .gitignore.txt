@@ -1,5 +1,2 @@
 #pyc files
-*/*.pyc
-
-#migrations
-migrations
+*.pyc
