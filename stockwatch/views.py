@@ -27,6 +27,7 @@ import hashlib
 import ast
 import datetime
 from django.http import JsonResponse
+import requests
 
 
 
@@ -224,6 +225,21 @@ def watchlist(request):
 
 	else:
 		return redirect('/login_site/')
+
+
+def news(request):
+	if request.user.is_authenticated():
+		news = requests.get('https://newsapi.org/v1/articles?source=cnbc&sortBy=top&apiKey=e469736fcf9c4b22bf6c50657ea1e9a8')
+		news = news.json()
+		print news
+		news = news["articles"]
+		news = json.dumps(news)
+		
+		print news
+		return render(request,"news1.html",{'news' : news})
+		
+	else:
+		return redirect('/login/')
 
 
 
