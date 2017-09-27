@@ -87,14 +87,14 @@ def home(request):
 			# "ANW",
 			# "AEB",
 			# "AED",
-			"AEG",
-			# "AEH",
-			"AEK",
-			"AER",
-			# "HIVE",
-			"AJRD",
-			"AET",
-			"AMG",
+			# "AEG",
+			# # "AEH",
+			# "AEK",
+			# "AER",
+			# # "HIVE",
+			# "AJRD",
+			# "AET",
+			# "AMG",
 
 		] 
 		for i in a:

@@ -329,6 +329,8 @@ var json = JSON.parse(json);
   for(var i=0;i<7;i++){
     volume.push(+detail[i][1]["5. volume"]);
   }
+  dates.reverse()
+  volume.reverse()
   console.log(dates);
       Highcharts.chart('chart_plot_01', {
     chart: {
