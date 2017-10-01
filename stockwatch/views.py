@@ -52,7 +52,7 @@ def home(request):
 			# # "AHC",
 			# "ATEN",
 			# "AAC",
-			# "AIR",
+			# # "AIR",
 			# "AAN",
 			# "ABB",
 			# "ABT",
@@ -99,24 +99,27 @@ def home(request):
 		] 
 		for i in a:
 			share = Share(i)
+			prev = share.get_prev_close()
 			price = share.get_price()
 			name = share.get_name()
 			volume = share.get_volume()
 			perct = share.get_percent_change()
 			high = share.get_day_high()
 			low = share.get_day_low()
+			perct = float(perct)
+			perct = perct*100
 			perct = str(perct)
 			print name
 			if Stock.objects.filter(name=i).exists():
-				stock = Stock.objects.filter(name=i).update(name=name,price=price,volume=volume,perct=perct,high=high,low=low)
+				stock = Stock.objects.filter(name=i).update(name=name,price=price,volume=volume,perct=perct,high=high,low=low,prev=prev)
 			else:
 
-				stock = Stock.objects.create(name=name,price=price,volume=volume,perct=perct,high=high,low=low)
+				stock = Stock.objects.create(name=name,price=price,volume=volume,perct=perct,high=high,low=low,prev=prev)
 				stock.save()
 
 
 		stock = Stock.objects.all()
-		
+		print request.user.first_name
 			
 
 
@@ -128,7 +131,7 @@ def home(request):
 		# top_gainers = nse.get_top_gainers()
 		# top_gainers = json.dumps(top_gainers)
 		# print top_gainers
-		return render(request,"home.html",{'stock':stock})
+		return render(request,"home.html",{'stock':stock,'user':request.user})
 
 
 def register(request):
@@ -245,6 +248,37 @@ def detail(request,p):
 	else:
 		return redirect('/login/')
 
+
+def news(request):
+	if request.user.is_authenticated():
+		description=[]
+		title=[]
+		url=[]
+		urltoimg=[]
+		news = requests.get('https://newsapi.org/v1/articles?source=cnbc&sortBy=top&apiKey=e469736fcf9c4b22bf6c50657ea1e9a8')
+		news = news.json()
+		articles = news['articles']
+		print articles
+
+		
+		return render(request,"news.html",{'articles' : articles})
+	else:
+		return redirect('/login_site/')
+
+
+def remove(request):
+	if request.user.is_authenticated():
+		if request.method == 'POST':
+			s = json.loads(request.body.decode('utf-8'))
+			name = s['name']
+			stock = Stock.objects.get(name=name)
+			print stock
+			print request.user
+			rstock = wishlist.objects.get(user=request.user,stock=stock)
+			rstock.delete()
+		return JsonResponse({'success': 'true'})
+	else:
+		return redirect('/login_site/')
 
 
 

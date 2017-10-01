@@ -15,6 +15,7 @@ class Stock(models.Model):
 	perct = models.CharField(max_length=10)
 	high = models.CharField(max_length=10)
 	low = models.CharField(max_length=10)
+	prev = models.CharField(max_length=10)
 
 
 

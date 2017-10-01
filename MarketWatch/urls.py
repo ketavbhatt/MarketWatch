@@ -24,7 +24,9 @@ urlpatterns = [
     url(r'^register/', views.register),
     url(r'^(?P<p>[\w\-\_]+)/registeration_comp/', views.registeration_comp),
     url(r'^wishlist/', views.wishlisttable),
+    url(r'^remove/', views.remove),
     url(r'^watchlist/', views.watchlist),
+    url(r'^news/', views.news),
     url(r'^detail/(?P<p>[\w\-\_]+)/$',views.detail),
 
 ]
