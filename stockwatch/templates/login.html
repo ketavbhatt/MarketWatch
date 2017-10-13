@@ -76,7 +76,7 @@
         <div id="signup">
           <h1>Sign Up for Free</h1>
 
-          <form action="/register/" method="post">
+          <form enctype="multipart/form-data" action="/register/" method="post">
 
           {% csrf_token %}
 
@@ -109,6 +109,17 @@
             </label>
             <input type="password" name="password" required autocomplete="off"/>
           </div>
+
+          <div class="field-wrap">
+            
+            <input type="file" name="pic" accept="image/*">
+            <label>
+              Profile Picture<span class="req"></span>
+            </label>
+          </div>
+
+
+  
 
           <button type="submit" class="button button-block"/>Get Started</button>
 

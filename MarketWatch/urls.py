@@ -16,6 +16,11 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from stockwatch import views
+from django.contrib.staticfiles.urls import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.conf import settings
+
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -29,4 +34,9 @@ urlpatterns = [
     url(r'^news/', views.news),
     url(r'^detail/(?P<p>[\w\-\_]+)/$',views.detail),
 
+   
+
 ]
+
+urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

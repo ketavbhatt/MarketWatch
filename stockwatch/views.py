@@ -120,10 +120,11 @@ def home(request):
 
 		stock = Stock.objects.all()
 		print request.user.first_name
+		print request.user
 			
 
-
-			
+		# print request.user
+		# user_pro = user_profile.objects.get(user_detail=request.user)
 
 		# nse = Nse()
 
@@ -140,6 +141,7 @@ def register(request):
 		lname = request.POST['lname']
 		email = request.POST['email']
 		password = request.POST['password']
+		pic = request.FILES['pic']
 		
 		hash=hashlib.sha1()
                 now=datetime.datetime.now()
@@ -147,7 +149,7 @@ def register(request):
                 tp=hash.hexdigest()
                 print tp
 		
-		user = tempUser.objects.create(fname=fname,lname=lname,email=email,password=password,tp=tp)
+		user = tempUser.objects.create(fname=fname,lname=lname,email=email,password=password,tp=tp,pic=pic)
 		
 		user.save()
 		print user
@@ -196,9 +198,12 @@ def registeration_comp(request,p):
 	user = User.objects.create(username=u.email,first_name=u.fname,last_name=u.lname,email=u.email)
 	user.set_password(u.password)
 	user.save()
+	user_pro = user_profile.objects.create(user_detail=user,pic=u.pic)
+	user_pro.save()
 	tempUser.objects.filter(tp=tp).delete()
 
-	return redirect('/home/')
+	return HttpResponse('invalid')
+	# return redirect('/home/')
 
 
 def wishlisttable(request):
