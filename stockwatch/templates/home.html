@@ -76,7 +76,7 @@
             <tr class="clickable" data-href="http://">
 
                 <th scope="row">{{items.stock_id}}</th>
-                <td>{{items.name}}</td>
+                <td><a href="/detail/{{items.stock_id}}">{{items.name}}</a></td>
                 <td>{{items.price}}</td>
                 <td>{{items.volume}}</td>
                 {% if items.prev < items.price %}
@@ -108,4 +108,3 @@
         </div>
  
  {% endblock %}
->>>>>>> 5533bdf65d878a145647c5a627c74d872d536ee2
