@@ -3110,7 +3110,10 @@ ul.project_files li a i {
     border-right: 2px solid transparent
 }
 .thumbnail .image {
+<<<<<<< HEAD
     height: 120px;
+=======
+>>>>>>> 5533bdf65d878a145647c5a627c74d872d536ee2
     overflow: hidden
 }
 .caption {
@@ -3121,7 +3124,10 @@ ul.project_files li a i {
     margin-bottom: 5px
 }
 .thumbnail {
+<<<<<<< HEAD
     height: 190px;
+=======
+>>>>>>> 5533bdf65d878a145647c5a627c74d872d536ee2
     overflow: hidden
 }
 .view {

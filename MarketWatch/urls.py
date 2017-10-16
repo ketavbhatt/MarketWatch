@@ -16,6 +16,11 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from stockwatch import views
+from django.contrib.staticfiles.urls import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.conf import settings
+
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -24,7 +29,15 @@ urlpatterns = [
     url(r'^register/', views.register),
     url(r'^(?P<p>[\w\-\_]+)/registeration_comp/', views.registeration_comp),
     url(r'^wishlist/', views.wishlisttable),
+    url(r'^remove/', views.remove),
     url(r'^watchlist/', views.watchlist),
     url(r'^news/', views.news),
+    url(r'^detail/(?P<p>[\w\-\_]+)/$',views.detail),
+    url(r'^contact/', views.contact),
+
+   
 
 ]
+
+urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

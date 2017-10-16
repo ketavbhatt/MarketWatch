@@ -49,10 +49,10 @@ def home(request):
 			# "MMM",
 			# "WBAI",
 			# "WUBA",
-			# "AHC",
+			# # "AHC",
 			# "ATEN",
 			# "AAC",
-			# "AIR",
+			# # "AIR",
 			# "AAN",
 			# "ABB",
 			# "ABT",
@@ -63,7 +63,7 @@ def home(request):
 			# "SGF",
 			# "ABM",
 			# "AKR",
-			# "ACN",
+			# # "ACN",
 			# "ACCO",
 			# "ATV",
 			# "ATU",
@@ -76,22 +76,22 @@ def home(request):
 			# "ATGE",
 			# "AAP",
 			# "ADSW",
-			# "WMS",
+			# # "WMS",
 			# "ASX",
 			# "ASIX",
 			# "AAV",
 			# "AVK",
-			# "AGC",
+			# # "AGC",
 			# "LCM",
 			# "ACM",
 			# "ANW",
 			# "AEB",
 			# "AED",
 			# "AEG",
-			# "AEH",
+			# # "AEH",
 			# "AEK",
 			# "AER",
-			# "HIVE",
+			# # "HIVE",
 			# "AJRD",
 			# "AET",
 			# "AMG",
@@ -99,27 +99,32 @@ def home(request):
 		] 
 		for i in a:
 			share = Share(i)
+			prev = share.get_prev_close()
 			price = share.get_price()
 			name = share.get_name()
 			volume = share.get_volume()
 			perct = share.get_percent_change()
 			high = share.get_day_high()
 			low = share.get_day_low()
-
+			perct = float(perct)
+			perct = perct*100
+			perct = str(perct)
+			print name
 			if Stock.objects.filter(name=i).exists():
-				stock = Stock.objects.filter(name=i).update(name=name,price=price,volume=volume,perct=perct,high=high,low=low)
+				stock = Stock.objects.filter(name=i).update(name=name,price=price,volume=volume,perct=perct,high=high,low=low,prev=prev)
 			else:
 
-				stock = Stock.objects.create(name=name,price=price,volume=volume,perct=perct,high=high,low=low)
+				stock = Stock.objects.create(name=name,price=price,volume=volume,perct=perct,high=high,low=low,prev=prev)
 				stock.save()
 
 
 		stock = Stock.objects.all()
-		
+		print request.user.first_name
+		print request.user
 			
 
-
-			
+		# print request.user
+		# user_pro = user_profile.objects.get(user_detail=request.user)
 
 		# nse = Nse()
 
@@ -127,7 +132,7 @@ def home(request):
 		# top_gainers = nse.get_top_gainers()
 		# top_gainers = json.dumps(top_gainers)
 		# print top_gainers
-		return render(request,"home.html",{'stock':stock})
+		return render(request,"home.html",{'stock':stock,'user':request.user})
 
 
 def register(request):
@@ -136,6 +141,8 @@ def register(request):
 		lname = request.POST['lname']
 		email = request.POST['email']
 		password = request.POST['password']
+		if request.FILES:
+			pic = request.FILES['pic']
 		
 		hash=hashlib.sha1()
                 now=datetime.datetime.now()
@@ -167,10 +174,11 @@ def register(request):
                 text = msg.as_string()
                 server.sendmail(fromaddr, toaddr, text)
                 server.quit()
-                return HttpResponse('Verification Link has been sent')
+                return render(request,'b.html')
 	else:
 
 		return render(request,"login.html")
+
 
 def login_site(request):
 	if request.method == 'POST':
@@ -192,9 +200,12 @@ def registeration_comp(request,p):
 	user = User.objects.create(username=u.email,first_name=u.fname,last_name=u.lname,email=u.email)
 	user.set_password(u.password)
 	user.save()
+	user_pro = user_profile.objects.create(user_detail=user,pic=u.pic)
+	user_pro.save()
 	tempUser.objects.filter(tp=tp).delete()
 
-	return redirect('/home/')
+	return HttpResponse('invalid')
+	# return redirect('/home/')
 
 
 def wishlisttable(request):
@@ -227,21 +238,63 @@ def watchlist(request):
 		return redirect('/login_site/')
 
 
-def news(request):
+
+def detail(request,p):
 	if request.user.is_authenticated():
-		news = requests.get('https://newsapi.org/v1/articles?source=cnbc&sortBy=top&apiKey=e469736fcf9c4b22bf6c50657ea1e9a8')
-		news = news.json()
-		print news
-		news = news["articles"]
-		news = json.dumps(news)
-		
-		print news
-		return render(request,"news1.html",{'news' : news})
-		
+		print p
+		stock = Stock.objects.get(stock_id=p)
+		print stock
+		r = requests.get('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol='+stock.name+'&apikey=EODCNM4ZVVCTQPY0')
+		stock_json = r.json()
+		print stock_json['Time Series (Daily)']
+		stock_detail = json.dumps(stock_json['Time Series (Daily)'])
+		return render(request,"index.html",{'stock':stock,'stock_detail':stock_detail})
+
+
+
 	else:
 		return redirect('/login/')
 
 
+def news(request):
+	if request.user.is_authenticated():
+		description=[]
+		title=[]
+		url=[]
+		urltoimg=[]
+		news = requests.get('https://newsapi.org/v1/articles?source=cnbc&sortBy=top&apiKey=e469736fcf9c4b22bf6c50657ea1e9a8')
+		news = news.json()
+		articles = news['articles']
+		print articles
+
+		
+		return render(request,"news.html",{'articles' : articles})
+	else:
+		return redirect('/login_site/')
 
 
+def remove(request):
+	if request.user.is_authenticated():
+		if request.method == 'POST':
+			s = json.loads(request.body.decode('utf-8'))
+			name = s['name']
+			stock = Stock.objects.get(name=name)
+			print stock
+			print request.user
+			rstock = wishlist.objects.get(user=request.user,stock=stock)
+			rstock.delete()
+		return JsonResponse({'success': 'true'})
+	else:
+		return redirect('/login_site/')
+
+
+def contact(request):
+	if request.user.is_authenticated():
+		if request.method == 'POST' :
+			return render(request,"feedback.html")
+
+		else:
+			return render(request,"contact.html")
+	else:
+		return redirect('/login_site/')
 
