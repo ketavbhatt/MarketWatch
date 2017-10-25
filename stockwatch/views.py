@@ -18,6 +18,7 @@ from .models import *
 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import logout as auth_logout
 
 from email.MIMEMultipart import MIMEMultipart
 from .safe import usermail,upassword
@@ -132,7 +133,8 @@ def home(request):
 		# top_gainers = nse.get_top_gainers()
 		# top_gainers = json.dumps(top_gainers)
 		# print top_gainers
-		return render(request,"home.html",{'stock':stock,'user':request.user})
+		user_pro = user_profile.objects.get(user_detail=request.user)
+		return render(request,"home.html",{'stock':stock,'user':request.user ,'user_pro' : user_pro})
 
 
 def register(request):
@@ -141,8 +143,8 @@ def register(request):
 		lname = request.POST['lname']
 		email = request.POST['email']
 		password = request.POST['password']
-		if request.FILES:
-			pic = request.FILES['pic']
+		
+		pic = request.FILES['pic']
 		
 		hash=hashlib.sha1()
                 now=datetime.datetime.now()
@@ -204,8 +206,7 @@ def registeration_comp(request,p):
 	user_pro.save()
 	tempUser.objects.filter(tp=tp).delete()
 
-	return HttpResponse('invalid')
-	# return redirect('/home/')
+	return redirect('/login/')
 
 
 def wishlisttable(request):
@@ -297,4 +298,15 @@ def contact(request):
 			return render(request,"contact.html")
 	else:
 		return redirect('/login_site/')
+
+
+
+def logout(request):
+    if request.user.is_authenticated():
+        auth_logout(request)
+    else:
+        return HttpResponse("invalid")
+    
+    return render(request,'login.html')
+
 

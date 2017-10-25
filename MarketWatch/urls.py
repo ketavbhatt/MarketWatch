@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^news/', views.news),
     url(r'^detail/(?P<p>[\w\-\_]+)/$',views.detail),
     url(r'^contact/', views.contact),
+    url(r'^logout/', views.logout),
 
    
 
