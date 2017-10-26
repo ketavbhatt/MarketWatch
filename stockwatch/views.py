@@ -137,14 +137,18 @@ def home(request):
 		return render(request,"home.html",{'stock':stock,'user':request.user ,'user_pro' : user_pro})
 
 
+
 def register(request):
 	if request.method == 'POST':
 		fname = request.POST['fname']
 		lname = request.POST['lname']
 		email = request.POST['email']
 		password = request.POST['password']
-		
-		pic = request.FILES['pic']
+		try:
+			pic = request.FILES['pic']
+
+		except:
+			pass
 		
 		hash=hashlib.sha1()
                 now=datetime.datetime.now()
@@ -152,7 +156,7 @@ def register(request):
                 tp=hash.hexdigest()
                 print tp
 		
-		user = tempUser.objects.create(fname=fname,lname=lname,email=email,password=password,tp=tp)
+		user = tempUser.objects.create(fname=fname,lname=lname,email=email,password=password,tp=tp,pic=pic)
 		
 		user.save()
 		print user
@@ -206,8 +210,8 @@ def registeration_comp(request,p):
 	user_pro.save()
 	tempUser.objects.filter(tp=tp).delete()
 
-	return redirect('/login/')
-
+	login(request, user)
+	return redirect('/home/')
 
 def wishlisttable(request):
 	if request.user.is_authenticated():
@@ -232,8 +236,10 @@ def watchlist(request):
 	if request.user.is_authenticated():
 		print request.user
 		Wishlist = wishlist.objects.filter(user=request.user)
+
+		user_pro = user_profile.objects.get(user_detail=request.user)
 		
-		return render(request,"watchlist.html",{'wishlist' : Wishlist})
+		return render(request,"watchlist.html",{'wishlist' : Wishlist,'user_pro' : user_pro })
 
 	else:
 		return redirect('/login_site/')
@@ -249,7 +255,8 @@ def detail(request,p):
 		stock_json = r.json()
 		print stock_json['Time Series (Daily)']
 		stock_detail = json.dumps(stock_json['Time Series (Daily)'])
-		return render(request,"index.html",{'stock':stock,'stock_detail':stock_detail})
+		user_pro = user_profile.objects.get(user_detail=request.user)
+		return render(request,"index.html",{'stock':stock,'stock_detail':stock_detail,'user_pro' : user_pro})
 
 
 
@@ -268,8 +275,8 @@ def news(request):
 		articles = news['articles']
 		print articles
 
-		
-		return render(request,"news.html",{'articles' : articles})
+		user_pro = user_profile.objects.get(user_detail=request.user)
+		return render(request,"news.html",{'articles' : articles,'user_pro' : user_pro})
 	else:
 		return redirect('/login_site/')
 
@@ -291,11 +298,38 @@ def remove(request):
 
 def contact(request):
 	if request.user.is_authenticated():
+		
 		if request.method == 'POST' :
+			name = request.POST['name']
+			email = request.POST['email']
+			message = request.POST['message']
+			number = request.POST['number']
+			fromaddr=usermail
+		        toaddr=usermail
+		        print fromaddr
+		        print toaddr
+		        msg=MIMEMultipart()
+		        msg['From']=fromaddr
+		        msg['To']=toaddr
+		        msg['Subject']='Feedback Email'
+		        domain = request.get_host()
+		        scheme = request.is_secure() and "https" or "http"
+		        body = "Name: {0} \n Email: {1} \n Message: {2} \n Contact Number: {3}".format(name,email,message,number) 
+		        part1 = MIMEText(body, 'plain')
+		        msg.attach(MIMEText(body, 'plain'))
+		        server = smtplib.SMTP('smtp.gmail.com', 587)
+		        server.starttls()
+		        server.login(fromaddr, upassword)
+		        text = msg.as_string()
+		        server.sendmail(fromaddr, toaddr, text)
+		        server.quit()
 			return render(request,"feedback.html")
 
 		else:
-			return render(request,"contact.html")
+			user_pro = user_profile.objects.get(user_detail=request.user)
+			return render(request,"contact.html",{'user_pro' : user_pro})
+
+		
 	else:
 		return redirect('/login_site/')
 

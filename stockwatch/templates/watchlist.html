@@ -51,7 +51,7 @@
               
             <tr class="clickable" data-href="http://">
 
-                <td>{{items.stock.name}}</td>
+                <td><a href="/detail/{{items.stock_id}}">{{items.stock.name}}</a></td>
 				<td>{{items.stock.price}}</td>
 				<td>{{items.stock.volume}}</td>
           {% if items.stock.prev < items.stock.price %}
